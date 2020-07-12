@@ -34,3 +34,11 @@ function getServerData(){
   });
 
 }
+
+
+function getServerJson(){
+    
+  fetch('/data').then(response => response.json()).then((resJson) => {
+    document.getElementById('resText-container').innerText = resJson.status;
+  });
+}
