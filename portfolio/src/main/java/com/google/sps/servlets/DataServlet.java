@@ -38,4 +38,13 @@ String json = "{";
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+      
+    String text = request.getParameter("text-input");
+    response.setContentType("text/html;");
+    response.getWriter().println("echo : " + text);
+
+  }
 }
