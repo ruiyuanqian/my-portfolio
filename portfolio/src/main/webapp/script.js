@@ -27,6 +27,17 @@ function addRandomGreeting() {
   greetingContainer.innerText = greeting;
 }
 
+function AddARandomMeme(){
+    
+  fetch('/data?aRandomOne=true').then(response => response.json()).then((resJson) => {
+    document.getElementById('aRandomMeme-container').innerHTML = 
+    '<p> ['+ resJson.comment +'] </p>\n' +
+    '<img src="'+ resJson.url +'" ></img>\n';
+  });
+
+}
+
+/*
 function getServerData(){
     
   fetch('/data').then(response => response.text()).then((resText) => {
@@ -35,10 +46,10 @@ function getServerData(){
 
 }
 
-
 function getServerJson(){
     
   fetch('/data').then(response => response.json()).then((resJson) => {
     document.getElementById('resText-container').innerText = resJson.status;
   });
 }
+*/

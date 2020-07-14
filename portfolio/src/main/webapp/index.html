@@ -14,6 +14,9 @@
       <p>Click here to get a random message:</p>
       <button onclick="addRandomGreeting()">Hello</button>
       <div id="greeting-container"></div>
+      <p>Click here to get a random meme image:</p>
+      <button onclick="AddARandomMeme()">A Random Meme</button>
+      <div id="aRandomMeme-container"></div>
 
       <p>I like meme images. So the first feature of this site is meme uploading. 
           I'm trying to add more features currently. But I think uploading has been available now.</p>
@@ -24,16 +27,27 @@
 
       <form action="/data" method="POST">
 
-      <p>Meme image URL:</p>
-      <textarea style="width:100%" name="url-input"></textarea>
+      <h1>Meme image URL:</h1>
+      <p>For preventing abuse, only the URLs from <a href="https://weibo.com/">Weibo</a>'s album/gallery are allowed here.</p>
+      <p>For instance, please input some urls like: </p>
+      <p>http://ww1.sinaimg.cn/large/c3e9e1d7ly1ggqiyxjhvxj20js0eu3z6.jpg</p>
+      <p>http://wx4.sinaimg.cn/large/0085KTY1gy1ggq9m3qvuej30jg0t6go2.jpg</p>
+      <p>http://ww1.sinaimg.cn/large/00745YaMgy1ggq7zf4ev3j30ir0xc431.jpg</p>
+      <p>http://wx2.sinaimg.cn/large/0063eTB5ly1ggphtvpjs6j309i0ecwgq.jpg</p>
+      <p>Many meme images with Weibo album urls can be found from: <a href="http://jandan.net/pic">http://jandan.net/pic</a></p>
+      <input type="text" style="width:100%" name="url-input"></input>
       <br/><br/>
       
-      <p>Comment for this Meme:</p>
+      <h1>Comment for this Meme:</h1>
+      <p>For preventing XSS attack, only a-z A-Z and space are allowed here.</p>
       <textarea style="width:100%" name="comment-input"></textarea>
       <br/><br/>
 
       <input type="submit" />
       </form>
+
+      <br/><br/>
+      <a href="/data">All Memes Uploaded</a>
       
       <!--
       <button onclick="getServerData()">Fetch some data!</button>

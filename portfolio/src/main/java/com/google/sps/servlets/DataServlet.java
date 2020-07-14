@@ -30,6 +30,11 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 
 import java.util.Date;
 import java.text.DateFormat;
+import java.lang.Boolean;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Collections;
+import java.util.regex.Pattern;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
@@ -47,13 +52,39 @@ public class DataServlet extends HttpServlet {
 //        response.setContentType("application/json;");
 //        response.getWriter().println(json);
 
-    Query query = new Query("Memes").addSort("timestamp", SortDirection.DESCENDING);
-
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Query query = new Query("Memes").addSort("timestamp", SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
 
-    response.setContentType("text/html;");
+    if( Boolean.parseBoolean( request.getParameter("aRandomOne") ) == true )
+    {
+        List<Entity> memeList = new ArrayList<Entity>();
+        results.asIterable().forEach(memeList::add);
+        Collections.shuffle(memeList);
 
+        response.setContentType("application/json;");
+        for(Entity aMeme : memeList ){
+            
+            String json = "{";
+            json += "\"url\": ";
+            json += "\"" + aMeme.getProperty("url") + "\"";
+            json += ", ";
+            json += "\"comment\": ";
+            json += "\"" + aMeme.getProperty("comment") + "\"";
+            json += ", ";
+            json += "\"timestamp\": ";
+            json += aMeme.getProperty("timestamp");
+            json += "}";
+            response.getWriter().println(json);
+
+            return ;
+        }
+        return ;
+    }
+
+    response.setContentType("text/html;");
+    response.getWriter().println("<a href=\"/\">Home Page</a>");
+    
     for (Entity entity : results.asIterable()) {
       long id = entity.getKey().getId();
       String argURL = (String) entity.getProperty("url");
@@ -76,17 +107,39 @@ public class DataServlet extends HttpServlet {
 
     String argURL = request.getParameter("url-input");
     String argComment = request.getParameter("comment-input");
+
+    if(
+        !(
+            ( Pattern.matches("^http:\\/\\/(.+)\\.sinaimg\\.cn\\/large\\/(.+)\\.(jpg|png|gif)$",argURL) )
+            &&
+            ( Pattern.matches("^[a-zA-Z\\s]*$",argComment) )
+        )
+    ){
+        response.setContentType("text/html;");
+        response.getWriter().println("<h1>Unallowed URL or Comment</h1>");
+        response.getWriter().println("<a href=\"/\">Home Page</a>");
+        return ;
+    }
+
     long timestamp = System.currentTimeMillis();
 
     Entity memeEntity = new Entity("Memes");
     memeEntity.setProperty("url", argURL);
     memeEntity.setProperty("comment", argComment);
     memeEntity.setProperty("timestamp", timestamp);
+
+    memeEntity.setProperty("randomIndex", Math.random());
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(memeEntity);
     
 //    response.sendRedirect("/data");
-    response.sendRedirect("/index.html");
+//    response.sendRedirect("/index.html");
+
+    response.setContentType("text/html;");
+    response.getWriter().println("<h1>Uploaded successfully</h1>");
+    response.getWriter().println("<a href=\"/\">Home Page</a>");
+    return ;
+
   }
 }
