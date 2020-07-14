@@ -1,6 +1,7 @@
 # Edit [2]
 Add meme uploading feature to portfolio page, with some limitations to prevent basic XSS attack and abuse.
-[Portfolio Page](https://rqian-sps-summer20.df.r.appspot.com)
+
+[Portfolio Page](https://rqian-sps-summer20.df.r.appspot.com): https://rqian-sps-summer20.df.r.appspot.com
 
 # Edit [1]
 This repo contains Ruiyuan Qian's portfolio and SPS projects.
