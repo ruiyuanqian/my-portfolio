@@ -20,6 +20,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
+
+import java.util.Date;
+import java.text.DateFormat;
+
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
@@ -29,22 +40,53 @@ public class DataServlet extends HttpServlet {
 //    response.setContentType("text/html;");
 //    response.getWriter().println("<h1>Hello world!</h1>");
 //    response.getWriter().println("<h1>Hello [Ruiyuan Qian]</h1>");
+//        String json = "{";
+//            json += "\"status\": ";
+//            json += 12345;
+//            json += "}";
+//        response.setContentType("application/json;");
+//        response.getWriter().println(json);
 
-String json = "{";
-    json += "\"status\": ";
-    json += 12345;
-    json += "}";
+    Query query = new Query("Memes").addSort("timestamp", SortDirection.DESCENDING);
 
-    response.setContentType("application/json;");
-    response.getWriter().println(json);
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(query);
+
+    response.setContentType("text/html;");
+
+    for (Entity entity : results.asIterable()) {
+      long id = entity.getKey().getId();
+      String argURL = (String) entity.getProperty("url");
+      String argComment = (String) entity.getProperty("comment");
+      long timestamp = (long) entity.getProperty("timestamp");
+      
+      response.getWriter().println("\n <p> ### ### ### </p>\n");
+      response.getWriter().println("\n <p> ID: " + id + "</p>");
+      response.getWriter().println("\n <p> Timestamp: " + DateFormat.getDateTimeInstance().format(timestamp) + "</p>");
+      response.getWriter().println("\n <p> Comment: " + argComment + "</p>");
+      response.getWriter().println("\n <img src=\"" + argURL + "\"></img>");
+    }
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-      
-    String text = request.getParameter("text-input");
-    response.setContentType("text/html;");
-    response.getWriter().println("echo : " + text);
+//    String text = request.getParameter("text-input");
+//    response.setContentType("text/html;");
+//    response.getWriter().println("echo : " + text);
 
+    String argURL = request.getParameter("url-input");
+    String argComment = request.getParameter("comment-input");
+    long timestamp = System.currentTimeMillis();
+
+    Entity memeEntity = new Entity("Memes");
+    memeEntity.setProperty("url", argURL);
+    memeEntity.setProperty("comment", argComment);
+    memeEntity.setProperty("timestamp", timestamp);
+    
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(memeEntity);
+    
+//    response.sendRedirect("/data");
+    response.sendRedirect("/index.html");
   }
 }

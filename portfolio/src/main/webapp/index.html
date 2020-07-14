@@ -8,30 +8,45 @@
   </head>
   <body>
     <div id="content">
+
       <h1>My Portfolio: [Ruiyuan Qian]</h1>
-      <p>This is my portfolio.</p>
+      <p>Hi, I'm Ruiyuan Qian, a Computer Science student. This is my portfolio.</p>
       <p>Click here to get a random message:</p>
       <button onclick="addRandomGreeting()">Hello</button>
       <div id="greeting-container"></div>
+
+      <p>I like meme images. So the first feature of this site is meme uploading. 
+          I'm trying to add more features currently. But I think uploading has been available now.</p>
+      <p>One meme image I quite like:</p>
+      <div>
+          <img src="/images/img-index-01.jpg"></img>
+      </div>
+
+      <form action="/data" method="POST">
+
+      <p>Meme image URL:</p>
+      <textarea style="width:100%" name="url-input"></textarea>
+      <br/><br/>
       
-      <button onclick="getServerData()">Fetch some data!</button>
-      <button onclick="getServerJson()">Fetch a Json!</button>
-      <div id="resText-container"></div>
-
-
-    <form action="/data" method="POST">
-
-      <p>Enter something:</p>
-      <textarea name="text-input">Text to be post~</textarea>
+      <p>Comment for this Meme:</p>
+      <textarea style="width:100%" name="comment-input"></textarea>
       <br/><br/>
 
       <input type="submit" />
-    </form>
+      </form>
+      
+      <!--
+      <button onclick="getServerData()">Fetch some data!</button>
+      <button onclick="getServerJson()">Fetch a Json!</button>
+      <div id="resText-container"></div>
+        <form action="/data" method="POST">
+        <p>Enter something:</p>
+        <textarea name="text-input">Text to be post~</textarea>
+        <br/><br/>
+        <input type="submit" />
+        </form>
+      -->
 
-      <p>Some meme pictures collected from the Internet:</p>
-      <div>
-          <img src="/images/img-index-01.jpg">
-      </div>
     </div>
   </body>
 </html>
