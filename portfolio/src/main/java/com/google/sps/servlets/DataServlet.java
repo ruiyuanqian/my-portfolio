@@ -39,9 +39,25 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
+import com.google.gson.Gson;
+
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
+
+  private class MemeRecord {
+      private String url;
+      private String comment;
+      private long timestamp; 
+      private double randomIndex;
+      
+      public MemeRecord(String nUrl, String nComment, long nTimestamp, double nRandomIndex){
+          this.url = nUrl;
+          this.comment = nComment;
+          this.timestamp = nTimestamp;
+          this.randomIndex = nRandomIndex;
+      }
+  }
 
   private void printJsonWithOneMeme(HttpServletResponse response, PreparedQuery results) throws IOException {
     List<Entity> memeList = new ArrayList<Entity>();
@@ -50,26 +66,28 @@ public class DataServlet extends HttpServlet {
 
     response.setContentType("application/json;");
     for(Entity aMeme : memeList ){
-            
-        String json = "{";
-        json += "\"url\": ";
-        json += "\"" + aMeme.getProperty("url") + "\"";
-        json += ", ";
-        json += "\"comment\": ";
-        json += "\"" + aMeme.getProperty("comment") + "\"";
-        json += ", ";
-        json += "\"timestamp\": ";
-        json += aMeme.getProperty("timestamp");
-        json += "}";
+        
+        MemeRecord aMemeRecord = new MemeRecord(
+            "" + aMeme.getProperty("url"),
+            "" + aMeme.getProperty("comment"),
+            Long.parseLong( "" + aMeme.getProperty("timestamp") ),
+            Double.parseDouble( "" + aMeme.getProperty("randomIndex") )
+        );
+
+        Gson aGson = new Gson();
+        String json = aGson.toJson( aMemeRecord );
+        
         response.getWriter().println(json);
 
-        return ;
+        break;
     }
     return ;
   }
 
   private void printHTMLWithAllMemes(HttpServletResponse response, PreparedQuery results) throws IOException {
     response.setContentType("text/html;");
+
+    /*
     response.getWriter().println("<a href=\"/\">Home Page</a>");
     
     for (Entity entity : results.asIterable()) {
