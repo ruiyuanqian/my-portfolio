@@ -43,6 +43,49 @@ import org.jsoup.safety.Whitelist;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
+  private void printJsonWithOneMeme(HttpServletResponse response, PreparedQuery results) throws IOException {
+    List<Entity> memeList = new ArrayList<Entity>();
+    results.asIterable().forEach(memeList::add);
+    Collections.shuffle(memeList);
+
+    response.setContentType("application/json;");
+    for(Entity aMeme : memeList ){
+            
+        String json = "{";
+        json += "\"url\": ";
+        json += "\"" + aMeme.getProperty("url") + "\"";
+        json += ", ";
+        json += "\"comment\": ";
+        json += "\"" + aMeme.getProperty("comment") + "\"";
+        json += ", ";
+        json += "\"timestamp\": ";
+        json += aMeme.getProperty("timestamp");
+        json += "}";
+        response.getWriter().println(json);
+
+        return ;
+    }
+    return ;
+  }
+
+  private void printHTMLWithAllMemes(HttpServletResponse response, PreparedQuery results) throws IOException {
+    response.setContentType("text/html;");
+    response.getWriter().println("<a href=\"/\">Home Page</a>");
+    
+    for (Entity entity : results.asIterable()) {
+      long id = entity.getKey().getId();
+      String argURL = (String) entity.getProperty("url");
+      String argComment = (String) entity.getProperty("comment");
+      long timestamp = (long) entity.getProperty("timestamp");
+      
+      response.getWriter().println("\n <p> ### ### ### </p>\n");
+      response.getWriter().println("\n <p> ID: " + id + "</p>");
+      response.getWriter().println("\n <p> Timestamp: " + DateFormat.getDateTimeInstance().format(timestamp) + "</p>");
+      response.getWriter().println("\n <p> Comment: " + argComment + "</p>");
+      response.getWriter().println("\n <img src=\"" + argURL + "\"></img>");
+    }
+  }
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 //    response.setContentType("text/html;");
@@ -59,47 +102,16 @@ public class DataServlet extends HttpServlet {
     Query query = new Query("Memes").addSort("timestamp", SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
 
-    if( Boolean.parseBoolean( request.getParameter("aRandomOne") ) == true )
+    Boolean shouldPickARandomOne = Boolean.parseBoolean( request.getParameter("aRandomOne") );
+    if(shouldPickARandomOne)
     {
-        List<Entity> memeList = new ArrayList<Entity>();
-        results.asIterable().forEach(memeList::add);
-        Collections.shuffle(memeList);
-
-        response.setContentType("application/json;");
-        for(Entity aMeme : memeList ){
-            
-            String json = "{";
-            json += "\"url\": ";
-            json += "\"" + aMeme.getProperty("url") + "\"";
-            json += ", ";
-            json += "\"comment\": ";
-            json += "\"" + aMeme.getProperty("comment") + "\"";
-            json += ", ";
-            json += "\"timestamp\": ";
-            json += aMeme.getProperty("timestamp");
-            json += "}";
-            response.getWriter().println(json);
-
-            return ;
-        }
-        return ;
+        printJsonWithOneMeme(response, results);
+    }
+    else
+    {
+        printHTMLWithAllMemes(response, results);
     }
 
-    response.setContentType("text/html;");
-    response.getWriter().println("<a href=\"/\">Home Page</a>");
-    
-    for (Entity entity : results.asIterable()) {
-      long id = entity.getKey().getId();
-      String argURL = (String) entity.getProperty("url");
-      String argComment = (String) entity.getProperty("comment");
-      long timestamp = (long) entity.getProperty("timestamp");
-      
-      response.getWriter().println("\n <p> ### ### ### </p>\n");
-      response.getWriter().println("\n <p> ID: " + id + "</p>");
-      response.getWriter().println("\n <p> Timestamp: " + DateFormat.getDateTimeInstance().format(timestamp) + "</p>");
-      response.getWriter().println("\n <p> Comment: " + argComment + "</p>");
-      response.getWriter().println("\n <img src=\"" + argURL + "\"></img>");
-    }
   }
 
   private int checkUnallowedInput(String argURL, String argComment)
