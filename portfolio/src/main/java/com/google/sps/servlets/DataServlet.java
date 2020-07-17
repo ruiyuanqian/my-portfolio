@@ -102,6 +102,22 @@ public class DataServlet extends HttpServlet {
     }
   }
 
+  private int checkUnallowedInput(String argURL, String argComment)
+  {
+      if( !Pattern.matches("^http:\\/\\/(.+)\\.sinaimg\\.cn\\/large\\/(.+)\\.(jpg|png|gif)$",argURL) )
+      {
+          return 1;
+      }
+      
+      if( !Pattern.matches("^(.+)$",argComment) )
+      {
+          return 2;
+      }
+
+      //0 means input is allowed
+      return 0;
+  }
+
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 //    String text = request.getParameter("text-input");
@@ -114,15 +130,18 @@ public class DataServlet extends HttpServlet {
     String argURL = Jsoup.clean( unsafeArgURL , Whitelist.basic() );
     String argComment = Jsoup.clean( unsafeArgComment , Whitelist.basic() );
 
-    if(
-        !(
-            ( Pattern.matches("^http:\\/\\/(.+)\\.sinaimg\\.cn\\/large\\/(.+)\\.(jpg|png|gif)$",argURL) )
-            &&
-            ( Pattern.matches("^[a-zA-Z\\s]*$",argComment) )
-        )
-    ){
+    int unallowedInputType = checkUnallowedInput( argURL , argComment );
+    if( unallowedInputType != 0 )
+    {
         response.setContentType("text/html;");
-        response.getWriter().println("<h1>Unallowed URL or Comment</h1>");
+        if( unallowedInputType == 1 )
+        {
+            response.getWriter().println("<h1>Unallowed URL</h1>");
+        }
+        else
+        {
+            response.getWriter().println("<h1>Unallowed Comment</h1>");
+        }
         response.getWriter().println("<a href=\"/\">Home Page</a>");
         return ;
     }
