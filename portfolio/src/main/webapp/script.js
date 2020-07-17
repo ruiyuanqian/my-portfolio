@@ -30,9 +30,19 @@ function addRandomGreeting() {
 function AddARandomMeme(){
     
   fetch('/data?aRandomOne=true').then(response => response.json()).then((resJson) => {
-    document.getElementById('aRandomMeme-container').innerHTML = 
-    '<p> ['+ resJson.comment +'] </p>\n' +
-    '<img src="'+ resJson.url +'" ></img>\n';
+    
+    container = document.getElementById('aRandomMeme-container');
+    container.innerHTML = '';
+
+    commentElement = document.createElement('p');
+    commentElement.innerText = "comment: " + resJson.comment;
+
+    imgElement = document.createElement('img');
+    imgElement.src = resJson.url;
+
+    container.appendChild(commentElement);
+    container.appendChild(imgElement);
+
   });
 
 }
