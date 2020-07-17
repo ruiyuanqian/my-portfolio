@@ -60,34 +60,42 @@ public class DataServlet extends HttpServlet {
   }
 
   private void printJsonWithOneMeme(HttpServletResponse response, PreparedQuery results) throws IOException {
+    response.setContentType("application/json;");
+
     List<Entity> memeList = new ArrayList<Entity>();
     results.asIterable().forEach(memeList::add);
     Collections.shuffle(memeList);
+    
+    memeList.stream().findFirst().ifPresent(
+        ( aMeme ) -> {
+            
+            try
+            {
+                MemeRecord aMemeRecord = new MemeRecord(
+                    "" + aMeme.getProperty("url"),
+                    "" + aMeme.getProperty("comment"),
+                    Long.parseLong( "" + aMeme.getProperty("timestamp") ),
+                    Double.parseDouble( "" + aMeme.getProperty("randomIndex") )
+                );
 
-    response.setContentType("application/json;");
-    for(Entity aMeme : memeList ){
-        
-        MemeRecord aMemeRecord = new MemeRecord(
-            "" + aMeme.getProperty("url"),
-            "" + aMeme.getProperty("comment"),
-            Long.parseLong( "" + aMeme.getProperty("timestamp") ),
-            Double.parseDouble( "" + aMeme.getProperty("randomIndex") )
-        );
+                Gson aGson = new Gson();
+                String json = aGson.toJson( aMemeRecord );
 
-        Gson aGson = new Gson();
-        String json = aGson.toJson( aMemeRecord );
-        
-        response.getWriter().println(json);
+                response.getWriter().println(json);
+            }
+            catch( IOException e )
+            {
+                e.printStackTrace();
+            }
 
-        break;
-    }
-    return ;
+        }
+    );
+    
   }
 
   private void printHTMLWithAllMemes(HttpServletResponse response, PreparedQuery results) throws IOException {
     response.setContentType("text/html;");
-
-    /*
+    
     response.getWriter().println("<a href=\"/\">Home Page</a>");
     
     for (Entity entity : results.asIterable()) {
