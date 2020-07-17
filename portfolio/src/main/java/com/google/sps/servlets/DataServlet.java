@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Collections;
 import java.util.regex.Pattern;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
@@ -105,8 +108,11 @@ public class DataServlet extends HttpServlet {
 //    response.setContentType("text/html;");
 //    response.getWriter().println("echo : " + text);
 
-    String argURL = request.getParameter("url-input");
-    String argComment = request.getParameter("comment-input");
+    String unsafeArgURL = request.getParameter("url-input");
+    String unsafeArgComment = request.getParameter("comment-input");
+
+    String argURL = Jsoup.clean( unsafeArgURL , Whitelist.basic() );
+    String argComment = Jsoup.clean( unsafeArgComment , Whitelist.basic() );
 
     if(
         !(
