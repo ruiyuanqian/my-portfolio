@@ -140,9 +140,9 @@ public class DataServlet extends HttpServlet {
 
   }
 
-  private int checkUnallowedInput(String argURL, String argComment)
+  public int checkUnallowedInput(String argURL, String argComment)
   {
-      if( !Pattern.matches("^http:\\/\\/(.+)\\.sinaimg\\.cn\\/large\\/(.+)\\.(jpg|png|gif)$",argURL) )
+      if( !Pattern.matches("^http:\\/\\/(.+)\\.sinaimg\\.cn\\/(large|mw600)\\/(.+)\\.(jpg|png|gif)$",argURL) )
       {
           return 1;
       }
