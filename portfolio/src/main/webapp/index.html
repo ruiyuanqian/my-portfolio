@@ -25,42 +25,40 @@
           <img src="/images/img-index-01.jpg"></img>
       </div>
 
+      <div id="login-status"></div>
+      <hr />
+
       <form action="/data" method="POST">
+        <fieldset id="meme-upload-fs" disabled="true">
 
-      <h1>Meme image URL:</h1>
-      <p>For preventing abuse, only the URLs from <a href="https://weibo.com/">Weibo</a>'s album/gallery are allowed here.</p>
-      <p>For instance, please input some urls like: </p>
-      <p>http://ww1.sinaimg.cn/large/c3e9e1d7ly1ggqiyxjhvxj20js0eu3z6.jpg</p>
-      <p>http://wx4.sinaimg.cn/large/0085KTY1gy1ggq9m3qvuej30jg0t6go2.jpg</p>
-      <p>http://ww1.sinaimg.cn/large/00745YaMgy1ggq7zf4ev3j30ir0xc431.jpg</p>
-      <p>http://wx2.sinaimg.cn/large/0063eTB5ly1ggphtvpjs6j309i0ecwgq.jpg</p>
-      <p>Many meme images with Weibo album urls can be found from: <a href="http://jandan.net/pic">http://jandan.net/pic</a></p>
-      <input type="text" style="width:100%" name="url-input"></input>
-      <br/><br/>
-      
-      <h1>Comment for this Meme:</h1>
-      <p>For preventing XSS attack, only a-z A-Z and space are allowed here.</p>
-      <textarea style="width:100%" name="comment-input"></textarea>
-      <br/><br/>
+            <h1>Meme image URL:</h1>
+            <p>For preventing abuse, only the URLs from <a href="https://weibo.com/">Weibo</a>'s album/gallery are allowed here.</p>
+            <p>For instance, please input some urls like: </p>
+            <p>http://ww1.sinaimg.cn/large/c3e9e1d7ly1ggqiyxjhvxj20js0eu3z6.jpg</p>
+            <p>http://wx4.sinaimg.cn/large/0085KTY1gy1ggq9m3qvuej30jg0t6go2.jpg</p>
+            <p>http://ww1.sinaimg.cn/large/00745YaMgy1ggq7zf4ev3j30ir0xc431.jpg</p>
+            <p>http://wx2.sinaimg.cn/large/0063eTB5ly1ggphtvpjs6j309i0ecwgq.jpg</p>
+            <p>Many meme images with Weibo album urls can be found from: <a href="http://jandan.net/pic">http://jandan.net/pic</a></p>
+            <input type="text" style="width:100%" name="url-input"></input>
+            <br/><br/>
+            
+            <h1>Comment for this Meme:</h1>
 
-      <input type="submit" />
+            <!--
+            <p>For preventing XSS attack, only a-z A-Z and space are allowed here.</p>
+            -->
+
+            <textarea style="width:100%" name="comment-input"></textarea>
+            <br/><br/>
+
+            <input type="submit" />
+        
+        </fieldset>
       </form>
 
       <br/><br/>
       <a href="/data">All Memes Uploaded</a>
       
-      <!--
-      <button onclick="getServerData()">Fetch some data!</button>
-      <button onclick="getServerJson()">Fetch a Json!</button>
-      <div id="resText-container"></div>
-        <form action="/data" method="POST">
-        <p>Enter something:</p>
-        <textarea name="text-input">Text to be post~</textarea>
-        <br/><br/>
-        <input type="submit" />
-        </form>
-      -->
-
     </div>
   </body>
 </html>

@@ -51,6 +51,15 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- In order to test APIs 20200719 -->
+    <!--
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-api-1.0-sdk</artifactId>
+      <version>1.9.59</version>
+    </dependency>
+    -->
+
   </dependencies>
 
   <build>
