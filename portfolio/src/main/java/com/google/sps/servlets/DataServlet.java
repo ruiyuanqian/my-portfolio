@@ -41,19 +41,26 @@ import org.jsoup.safety.Whitelist;
 
 import com.google.gson.Gson;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
+  private static final UserService userService = UserServiceFactory.getUserService();
+
   private class MemeRecord {
       private String url;
       private String comment;
+      private String userEmail;
       private long timestamp; 
       private double randomIndex;
       
-      public MemeRecord(String nUrl, String nComment, long nTimestamp, double nRandomIndex){
+      public MemeRecord(String nUrl, String nComment, String nUserEmail, long nTimestamp, double nRandomIndex){
           this.url = nUrl;
           this.comment = nComment;
+          this.userEmail = nUserEmail;
           this.timestamp = nTimestamp;
           this.randomIndex = nRandomIndex;
       }
@@ -74,6 +81,7 @@ public class DataServlet extends HttpServlet {
                 MemeRecord aMemeRecord = new MemeRecord(
                     "" + aMeme.getProperty("url"),
                     "" + aMeme.getProperty("comment"),
+                    "" + aMeme.getProperty("userEmail"),
                     Long.parseLong( "" + aMeme.getProperty("timestamp") ),
                     Double.parseDouble( "" + aMeme.getProperty("randomIndex") )
                 );
@@ -103,9 +111,12 @@ public class DataServlet extends HttpServlet {
       String argURL = (String) entity.getProperty("url");
       String argComment = (String) entity.getProperty("comment");
       long timestamp = (long) entity.getProperty("timestamp");
+
+      String userEmail = (String) entity.getProperty("userEmail");
       
       response.getWriter().println("\n <p> ### ### ### </p>\n");
       response.getWriter().println("\n <p> ID: " + id + "</p>");
+      response.getWriter().println("\n <p> User: " + userEmail + "</p>");
       response.getWriter().println("\n <p> Timestamp: " + DateFormat.getDateTimeInstance().format(timestamp) + "</p>");
       response.getWriter().println("\n <p> Comment: " + argComment + "</p>");
       response.getWriter().println("\n <img src=\"" + argURL + "\"></img>");
@@ -161,6 +172,15 @@ public class DataServlet extends HttpServlet {
 //    String text = request.getParameter("text-input");
 //    response.setContentType("text/html;");
 //    response.getWriter().println("echo : " + text);
+    
+    //UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn())
+    {
+        response.setContentType("text/html;");
+        response.getWriter().println("<h1>Please login before uploading memes.</h1>");
+        response.getWriter().println("<a href=\"/\">Home Page</a>");
+        return ;
+    }
 
     String unsafeArgURL = request.getParameter("url-input");
     String unsafeArgComment = request.getParameter("comment-input");
@@ -192,6 +212,8 @@ public class DataServlet extends HttpServlet {
     memeEntity.setProperty("timestamp", timestamp);
 
     memeEntity.setProperty("randomIndex", Math.random());
+
+    memeEntity.setProperty("userEmail", userService.getCurrentUser().getEmail());
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(memeEntity);

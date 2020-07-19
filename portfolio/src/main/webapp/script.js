@@ -34,12 +34,16 @@ function AddARandomMeme(){
     let container = document.getElementById('aRandomMeme-container');
     container.innerHTML = '';
 
+    let commentUser = document.createElement('p');
+    commentUser.innerText = "User: " + resJson.userEmail;
+
     let commentElement = document.createElement('p');
-    commentElement.innerText = "comment: " + resJson.comment;
+    commentElement.innerText = "Comment: " + resJson.comment;
 
     let imgElement = document.createElement('img');
     imgElement.src = resJson.url;
 
+    container.appendChild(commentUser);
     container.appendChild(commentElement);
     container.appendChild(imgElement);
 
