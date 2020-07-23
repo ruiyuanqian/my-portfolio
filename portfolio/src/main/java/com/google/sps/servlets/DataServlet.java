@@ -158,7 +158,7 @@ public class DataServlet extends HttpServlet {
       ILLEGAL_COMMENT,
   }
 
-  public InputValidationStatus checkUnallowedInput(String argURL, String argComment)
+  InputValidationStatus checkUnallowedInput(String argURL, String argComment)
   {
       if( !Pattern.matches("^http:\\/\\/(.+)\\.sinaimg\\.cn\\/(large|mw600)\\/(.+)\\.(jpg|png|gif)$",argURL) )
       {
