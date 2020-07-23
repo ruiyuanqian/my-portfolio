@@ -59,8 +59,8 @@ public class LoginServlet extends HttpServlet {
     if (userService.isUserLoggedIn()) 
     {
         LoginStatus aLoginStatus = new LoginStatus(
-            true,
-            "",
+            /* isLoggedIn = */ true,
+            /* logInURL =   */ "",
             userService.createLogoutURL("/"),
             userService.getCurrentUser().getEmail()
         );
@@ -69,10 +69,10 @@ public class LoginServlet extends HttpServlet {
     else
     {
         LoginStatus aLoginStatus = new LoginStatus(
-            false,
+            /* isLoggedIn =  */ false,
             userService.createLoginURL("/"),
-            "",
-            ""
+            /* logOutURL =   */ "",
+            /* userEmail =   */ ""
         );
         json = aGson.toJson( aLoginStatus );
     }
