@@ -49,6 +49,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 public class DataServlet extends HttpServlet {
 
   private static final UserService userService = UserServiceFactory.getUserService();
+  private static final Gson aGson = new Gson();
 
   private class MemeRecord {
       private String url;
@@ -86,7 +87,7 @@ public class DataServlet extends HttpServlet {
                     Double.parseDouble( "" + aMeme.getProperty("randomIndex") )
                 );
 
-                Gson aGson = new Gson();
+                //Gson aGson = new Gson();
                 String json = aGson.toJson( aMemeRecord );
 
                 response.getWriter().println(json);
@@ -151,20 +152,26 @@ public class DataServlet extends HttpServlet {
 
   }
 
-  public int checkUnallowedInput(String argURL, String argComment)
+  enum InputValidationStatus {
+      VALID,
+      ILLEGAL_URL,
+      ILLEGAL_COMMENT,
+  }
+
+  public InputValidationStatus checkUnallowedInput(String argURL, String argComment)
   {
       if( !Pattern.matches("^http:\\/\\/(.+)\\.sinaimg\\.cn\\/(large|mw600)\\/(.+)\\.(jpg|png|gif)$",argURL) )
       {
-          return 1;
+          return InputValidationStatus.ILLEGAL_URL;
       }
       
       if( !Pattern.matches("^(.+)$",argComment) )
       {
-          return 2;
+          return InputValidationStatus.ILLEGAL_COMMENT;
       }
 
       //0 means input is allowed
-      return 0;
+      return InputValidationStatus.VALID;
   }
 
   @Override
@@ -188,11 +195,11 @@ public class DataServlet extends HttpServlet {
     String argURL = Jsoup.clean( unsafeArgURL , Whitelist.basic() );
     String argComment = Jsoup.clean( unsafeArgComment , Whitelist.basic() );
 
-    int unallowedInputType = checkUnallowedInput( argURL , argComment );
-    if( unallowedInputType != 0 )
+    InputValidationStatus unallowedInputType = checkUnallowedInput( argURL , argComment );
+    if( unallowedInputType != InputValidationStatus.VALID )
     {
         response.setContentType("text/html;");
-        if( unallowedInputType == 1 )
+        if( unallowedInputType == InputValidationStatus.ILLEGAL_URL )
         {
             response.getWriter().println("<h1>Unallowed URL</h1>");
         }
