@@ -69,7 +69,7 @@ function checkLoginStatus(){
             let commentP = document.createElement('p');
             let commentA = document.createElement('a');
 
-            if(resJson.isLoggedIn == false)
+            if(!resJson.isLoggedIn)
             {
                 commentHeader.innerText = 'Hello "Anonymous",';
                 
