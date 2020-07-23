@@ -44,6 +44,8 @@ import com.google.gson.Gson;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
+import com.google.sps.servlets.FTLSingleton;
+
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
@@ -51,12 +53,12 @@ public class DataServlet extends HttpServlet {
   private static final UserService userService = UserServiceFactory.getUserService();
   private static final Gson aGson = new Gson();
 
-  private class MemeRecord {
-      private String url;
-      private String comment;
-      private String userEmail;
-      private long timestamp; 
-      private double randomIndex;
+  class MemeRecord {
+      String url;
+      String comment;
+      String userEmail;
+      long timestamp; 
+      double randomIndex;
       
       public MemeRecord(String nUrl, String nComment, String nUserEmail, long nTimestamp, double nRandomIndex){
           this.url = nUrl;
@@ -104,7 +106,21 @@ public class DataServlet extends HttpServlet {
 
   private void printHTMLWithAllMemes(HttpServletResponse response, PreparedQuery results) throws IOException {
     response.setContentType("text/html;");
-    
+    FTLSingleton.getInstance().render_allMemes_header( response.getWriter() );
+    for (Entity entity : results.asIterable()) 
+    {
+        MemeRecord tmpMeme = new MemeRecord(
+            "" + entity.getProperty("url"),
+            "" + entity.getProperty("comment"),
+            "" + entity.getProperty("userEmail"),
+            Long.parseLong( "" + entity.getProperty("timestamp") ),
+            Double.parseDouble( "" + entity.getProperty("randomIndex") )
+            );
+        
+        FTLSingleton.getInstance().render_allMemes_aMeme( response.getWriter() , tmpMeme );
+    }
+
+    /*
     response.getWriter().println("<a href=\"/\">Home Page</a>");
     
     for (Entity entity : results.asIterable()) {
@@ -122,6 +138,7 @@ public class DataServlet extends HttpServlet {
       response.getWriter().println("\n <p> Comment: " + argComment + "</p>");
       response.getWriter().println("\n <img src=\"" + argURL + "\"></img>");
     }
+    */
   }
 
   @Override
