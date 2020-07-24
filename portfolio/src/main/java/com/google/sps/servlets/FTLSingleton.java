@@ -42,11 +42,15 @@ public class FTLSingleton {
         return instance;
     }
 
-    public void render_allMemes_header( Writer aWriter )
+    public void render_staticPart( Writer aWriter , String templateName , String partName )
     {
         try 
         {
-            Template aTemplate = this.cfg.getTemplate("./templates/allMemes_header.ftl");
+            String fullPathName = "./templates/" + templateName + "_" + partName + ".ftl";
+
+            Template aTemplate = this.cfg.getTemplate( fullPathName );
+            // An example to load header:
+            // Template aTemplate = this.cfg.getTemplate("./templates/allMemes_header.ftl");
             
             Map<String, Object> args = new HashMap<String, Object>();
 

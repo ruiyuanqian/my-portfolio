@@ -106,7 +106,10 @@ public class DataServlet extends HttpServlet {
 
   private void printHTMLWithAllMemes(HttpServletResponse response, PreparedQuery results) throws IOException {
     response.setContentType("text/html;");
-    FTLSingleton.getInstance().render_allMemes_header( response.getWriter() );
+    // deprecated render function:
+    // FTLSingleton.getInstance().render_allMemes_header( response.getWriter() );
+
+    FTLSingleton.getInstance().render_staticPart( response.getWriter() , "allMemes" , "header" );
     for (Entity entity : results.asIterable()) 
     {
         MemeRecord tmpMeme = new MemeRecord(
@@ -119,6 +122,7 @@ public class DataServlet extends HttpServlet {
         
         FTLSingleton.getInstance().render_allMemes_aMeme( response.getWriter() , tmpMeme );
     }
+    FTLSingleton.getInstance().render_staticPart( response.getWriter() , "allMemes" , "footer" );
 
     /*
     response.getWriter().println("<a href=\"/\">Home Page</a>");
