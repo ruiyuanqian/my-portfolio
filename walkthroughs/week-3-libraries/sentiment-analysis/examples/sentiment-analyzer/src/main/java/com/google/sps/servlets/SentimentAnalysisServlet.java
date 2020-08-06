@@ -35,6 +35,9 @@ public class SentimentAnalysisServlet extends HttpServlet {
     LanguageServiceClient languageService = LanguageServiceClient.create();
     Sentiment sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
     float score = sentiment.getScore();
+
+    float magnitude = sentiment.getMagnitude();
+
     languageService.close();
 
     // Output the sentiment score as HTML.
@@ -43,6 +46,7 @@ public class SentimentAnalysisServlet extends HttpServlet {
     response.getWriter().println("<h1>Sentiment Analysis</h1>");
     response.getWriter().println("<p>You entered: " + message + "</p>");
     response.getWriter().println("<p>Sentiment analysis score: " + score + "</p>");
+    response.getWriter().println("<p>Sentiment analysis magnitude: " + magnitude + "</p>");
     response.getWriter().println("<p><a href=\"/\">Back</a></p>");
   }
 }

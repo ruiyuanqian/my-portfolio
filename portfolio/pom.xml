@@ -51,6 +51,12 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>2.3.30</version>
+    </dependency>
+
     <!-- In order to test APIs 20200719 -->
     <!--
     <dependency>

@@ -44,18 +44,21 @@ import com.google.gson.Gson;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
+import com.google.sps.servlets.FTLSingleton;
+
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
   private static final UserService userService = UserServiceFactory.getUserService();
+  private static final Gson aGson = new Gson();
 
-  private class MemeRecord {
-      private String url;
-      private String comment;
-      private String userEmail;
-      private long timestamp; 
-      private double randomIndex;
+  class MemeRecord {
+      String url;
+      String comment;
+      String userEmail;
+      long timestamp; 
+      double randomIndex;
       
       public MemeRecord(String nUrl, String nComment, String nUserEmail, long nTimestamp, double nRandomIndex){
           this.url = nUrl;
@@ -86,7 +89,7 @@ public class DataServlet extends HttpServlet {
                     Double.parseDouble( "" + aMeme.getProperty("randomIndex") )
                 );
 
-                Gson aGson = new Gson();
+                //Gson aGson = new Gson();
                 String json = aGson.toJson( aMemeRecord );
 
                 response.getWriter().println(json);
@@ -103,7 +106,25 @@ public class DataServlet extends HttpServlet {
 
   private void printHTMLWithAllMemes(HttpServletResponse response, PreparedQuery results) throws IOException {
     response.setContentType("text/html;");
-    
+    // deprecated render function:
+    // FTLSingleton.getInstance().render_allMemes_header( response.getWriter() );
+
+    FTLSingleton.getInstance().render_staticPart( response.getWriter() , "allMemes" , "header" );
+    for (Entity entity : results.asIterable()) 
+    {
+        MemeRecord tmpMeme = new MemeRecord(
+            "" + entity.getProperty("url"),
+            "" + entity.getProperty("comment"),
+            "" + entity.getProperty("userEmail"),
+            Long.parseLong( "" + entity.getProperty("timestamp") ),
+            Double.parseDouble( "" + entity.getProperty("randomIndex") )
+            );
+        
+        FTLSingleton.getInstance().render_allMemes_aMeme( response.getWriter() , tmpMeme );
+    }
+    FTLSingleton.getInstance().render_staticPart( response.getWriter() , "allMemes" , "footer" );
+
+    /*
     response.getWriter().println("<a href=\"/\">Home Page</a>");
     
     for (Entity entity : results.asIterable()) {
@@ -121,6 +142,7 @@ public class DataServlet extends HttpServlet {
       response.getWriter().println("\n <p> Comment: " + argComment + "</p>");
       response.getWriter().println("\n <img src=\"" + argURL + "\"></img>");
     }
+    */
   }
 
   @Override
@@ -151,20 +173,26 @@ public class DataServlet extends HttpServlet {
 
   }
 
-  public int checkUnallowedInput(String argURL, String argComment)
+  enum InputValidationStatus {
+      VALID,
+      ILLEGAL_URL,
+      ILLEGAL_COMMENT,
+  }
+
+  InputValidationStatus checkUnallowedInput(String argURL, String argComment)
   {
       if( !Pattern.matches("^http:\\/\\/(.+)\\.sinaimg\\.cn\\/(large|mw600)\\/(.+)\\.(jpg|png|gif)$",argURL) )
       {
-          return 1;
+          return InputValidationStatus.ILLEGAL_URL;
       }
       
       if( !Pattern.matches("^(.+)$",argComment) )
       {
-          return 2;
+          return InputValidationStatus.ILLEGAL_COMMENT;
       }
 
       //0 means input is allowed
-      return 0;
+      return InputValidationStatus.VALID;
   }
 
   @Override
@@ -188,11 +216,11 @@ public class DataServlet extends HttpServlet {
     String argURL = Jsoup.clean( unsafeArgURL , Whitelist.basic() );
     String argComment = Jsoup.clean( unsafeArgComment , Whitelist.basic() );
 
-    int unallowedInputType = checkUnallowedInput( argURL , argComment );
-    if( unallowedInputType != 0 )
+    InputValidationStatus unallowedInputType = checkUnallowedInput( argURL , argComment );
+    if( unallowedInputType != InputValidationStatus.VALID )
     {
         response.setContentType("text/html;");
-        if( unallowedInputType == 1 )
+        if( unallowedInputType == InputValidationStatus.ILLEGAL_URL )
         {
             response.getWriter().println("<h1>Unallowed URL</h1>");
         }
